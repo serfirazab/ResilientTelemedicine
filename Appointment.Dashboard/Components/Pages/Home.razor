@@ -14,9 +14,22 @@
             <div class="premium-card">
                 <div class="card-header-custom">
                     <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Book New Appointment</h4>
-                    <p class="text-muted small mb-0 mt-1">Naive API Demo - Expect failures!</p>
+                    <p class="text-muted small mb-0 mt-1">Select mode and observe the behavior!</p>
                 </div>
                 <div class="card-body-custom">
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
+                        <span class="fw-bold @(!isResilientMode ? "text-danger" : "text-muted")">
+                            <i class="bi bi-shield-slash"></i> Naive (Phase 3)
+                        </span>
+                        <div class="form-check form-switch m-0">
+                            <input class="form-check-input" type="checkbox" role="switch" id="modeSwitch" style="width: 3rem; height: 1.5rem; cursor: pointer;" @bind="isResilientMode">
+                        </div>
+                        <span class="fw-bold @(isResilientMode ? "text-success" : "text-muted")">
+                            <i class="bi bi-shield-check"></i> Resilient (Phase 4)
+                        </span>
+                    </div>
+
                     <div class="form-floating mb-3">
                         <input class="form-control custom-input" id="patientName" placeholder="John Doe" @bind="bookingRequest.PatientId" />
                         <label for="patientName">Patient Full Name</label>
@@ -126,6 +139,7 @@
     };
 
     private bool isBooking = false;
+    private bool isResilientMode = true; // Default to resilient
     private string statusMessage = "";
     private bool isSuccess = false;
     private List<global::Appointment.Shared.Models.Appointment>? appointments;
@@ -151,19 +165,21 @@
     private async Task BookAppointment()
     {
         isBooking = true;
-        statusMessage = "Booking in progress... (Watch for naive failures!)";
+        statusMessage = isResilientMode ? "Booking with Polly Resilience... (Expect success!)" : "Booking in Naive mode... (Expect failures!)";
         isSuccess = false;
         StateHasChanged();
 
         try
         {
+            var endpoint = isResilientMode ? "/api/appointments/book-resilient" : "/api/appointments/book-naive";
+            
             var client = ClientFactory.CreateClient("ApiClient");
-            var response = await client.PostAsJsonAsync("/api/appointments/book-naive", bookingRequest);
+            var response = await client.PostAsJsonAsync(endpoint, bookingRequest);
             
             if (response.IsSuccessStatusCode)
             {
                 isSuccess = true;
-                statusMessage = "Appointment booked successfully!";
+                statusMessage = $"Appointment booked successfully! (Mode: {(isResilientMode ? "Resilient" : "Naive")})";
                 await LoadAppointments();
                 
                 // Reset form slightly
