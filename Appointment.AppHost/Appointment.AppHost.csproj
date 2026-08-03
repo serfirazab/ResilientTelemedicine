@@ -20,6 +20,7 @@
     <ProjectReference Include="..\Appointment.ScheduleService\Appointment.ScheduleService.csproj" />
     <ProjectReference Include="..\Appointment.InsuranceGateway\Appointment.InsuranceGateway.csproj" />
     <ProjectReference Include="..\Appointment.NotificationService\Appointment.NotificationService.csproj" />
+    <ProjectReference Include="..\Appointment.Dashboard\Appointment.Dashboard.csproj" />
   </ItemGroup>
 
 </Project>
