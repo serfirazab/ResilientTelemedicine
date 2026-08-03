@@ -1,0 +1,22 @@
+AGENTS.md
+CONTEXT.md
+agent-handoff-briefing.md
+
+# Standard .NET gitignore below
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+TestResults/
+*.log
+.DS_Store
+
+# Project AI Documents
+agent-handoff-briefing.md
+implementation_plan.md
+AGENTS.md
+CONTEXT.md
+task.md
