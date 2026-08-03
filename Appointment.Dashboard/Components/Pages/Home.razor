@@ -4,124 +4,167 @@
 @inject IHttpClientFactory ClientFactory
 @rendermode InteractiveServer
 
-<PageTitle>Telemedicine Dashboard</PageTitle>
+<PageTitle>Telemedicine Booking</PageTitle>
 
-<h1>Telemedicine Dashboard (Naive Mode)</h1>
+<div class="dashboard-wrapper">
+    <div class="dashboard-container">
+        
+        <!-- Hero Header -->
+        <div class="hero-header">
+            <div>
+                <h1 class="hero-title">Book a Specialist</h1>
+                <p class="text-muted mb-0" style="font-size: 1.1rem;">Schedule your online consultation securely.</p>
+            </div>
+            
+            <div class="mode-toggle">
+                <button class="toggle-btn @(!isResilientMode ? "active-naive" : "")" @onclick="() => isResilientMode = false">
+                    <i class="bi bi-shield-slash"></i> Naive API
+                </button>
+                <button class="toggle-btn @(isResilientMode ? "active-resilient" : "")" @onclick="() => isResilientMode = true">
+                    <i class="bi bi-shield-check"></i> Resilient Polly
+                </button>
+            </div>
+        </div>
 
-<div class="dashboard-container">
-    <div class="row g-4">
-        <div class="col-lg-5">
-            <div class="premium-card">
-                <div class="card-header-custom">
-                    <h4 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Book New Appointment</h4>
-                    <p class="text-muted small mb-0 mt-1">Select mode and observe the behavior!</p>
-                </div>
-                <div class="card-body-custom">
-                    
-                    <div class="d-flex justify-content-between align-items-center mb-4 p-3 rounded" style="background-color: #f8f9fa; border: 1px solid #dee2e6;">
-                        <span class="fw-bold @(!isResilientMode ? "text-danger" : "text-muted")">
-                            <i class="bi bi-shield-slash"></i> Naive (Phase 3)
-                        </span>
-                        <div class="form-check form-switch m-0">
-                            <input class="form-check-input" type="checkbox" role="switch" id="modeSwitch" style="width: 3rem; height: 1.5rem; cursor: pointer;" @bind="isResilientMode">
+        <div class="row g-5">
+            <!-- Left Column: Booking Form -->
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <div class="card-header-glass">
+                        <h4 class="mb-0 fw-bold" style="color: #0f172a;">Appointment Details</h4>
+                    </div>
+                    <div class="card-body-glass">
+                        
+                        <div class="input-group-custom">
+                            <label class="input-label">Select Specialist</label>
+                            <div class="doctor-grid">
+                                <div class="doctor-card @(bookingRequest.DoctorId == "DOC-101" ? "selected" : "")" @onclick="@(() => SelectDoctor("DOC-101"))">
+                                    <img src="/images/doctors/doc101.png" class="doctor-avatar" alt="Dr. Sarah Jenkins" />
+                                    <div class="doctor-info">
+                                        <h5>Dr. Sarah Jenkins</h5>
+                                        <p>Cardiology</p>
+                                    </div>
+                                </div>
+                                <div class="doctor-card @(bookingRequest.DoctorId == "DOC-202" ? "selected" : "")" @onclick="@(() => SelectDoctor("DOC-202"))">
+                                    <img src="/images/doctors/doc202.png" class="doctor-avatar" alt="Dr. Michael Chen" />
+                                    <div class="doctor-info">
+                                        <h5>Dr. Kenji Tanaka</h5>
+                                        <p>Neurology</p>
+                                    </div>
+                                </div>
+                                <div class="doctor-card @(bookingRequest.DoctorId == "DOC-303" ? "selected" : "")" @onclick="@(() => SelectDoctor("DOC-303"))">
+                                    <img src="/images/doctors/doc303.png" class="doctor-avatar" alt="Dr. Emily Stone" />
+                                    <div class="doctor-info">
+                                        <h5>Dr. Emily Stone</h5>
+                                        <p>Pediatrics</p>
+                                    </div>
+                                </div>
+                                <div class="doctor-card @(bookingRequest.DoctorId == "DOC-404" ? "selected" : "")" @onclick="@(() => SelectDoctor("DOC-404"))">
+                                    <img src="/images/doctors/doc404.png" class="doctor-avatar" alt="Dr. James Wilson" />
+                                    <div class="doctor-info">
+                                        <h5>Dr. A. Bennett</h5>
+                                        <p>General Practice</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <span class="fw-bold @(isResilientMode ? "text-success" : "text-muted")">
-                            <i class="bi bi-shield-check"></i> Resilient (Phase 4)
-                        </span>
-                    </div>
 
-                    <div class="form-floating mb-3">
-                        <input class="form-control custom-input" id="patientName" placeholder="John Doe" @bind="bookingRequest.PatientId" />
-                        <label for="patientName">Patient Full Name</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <select class="form-select custom-input" id="doctorSelect" @bind="bookingRequest.DoctorId">
-                            <option value="DOC-101">Dr. Sarah Jenkins (Cardiology)</option>
-                            <option value="DOC-202">Dr. Michael Chen (Neurology)</option>
-                            <option value="DOC-303">Dr. Emily Stone (Pediatrics)</option>
-                            <option value="DOC-404">Dr. James Wilson (General Practice)</option>
-                        </select>
-                        <label for="doctorSelect">Select Specialist</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input class="form-control custom-input" id="insurance" placeholder="INS-..." @bind="bookingRequest.InsuranceNumber" />
-                        <label for="insurance">Insurance Policy Number</label>
-                    </div>
-                    <div class="form-floating mb-4">
-                        <input type="number" class="form-control custom-input" id="cost" @bind="bookingRequest.EstimatedCost" />
-                        <label for="cost">Estimated Cost ($)</label>
-                    </div>
-                    <button class="btn btn-primary-custom w-100 py-3 fw-bold" @onclick="BookAppointment" disabled="@isBooking">
-                        @if (isBooking)
+                        <div class="input-group-custom">
+                            <label class="input-label">Patient Full Name</label>
+                            <input type="text" class="premium-input" placeholder="e.g. John Doe" @bind="bookingRequest.PatientId" />
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group-custom">
+                                    <label class="input-label">Insurance Policy No.</label>
+                                    <input type="text" class="premium-input" placeholder="INS-..." @bind="bookingRequest.InsuranceNumber" />
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="input-group-custom">
+                                    <label class="input-label">Estimated Cost ($)</label>
+                                    <input type="number" class="premium-input" @bind="bookingRequest.EstimatedCost" />
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="btn-premium mt-3" @onclick="BookAppointment" disabled="@isBooking">
+                            @if (isBooking)
+                            {
+                                <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                                <span>Securing Appointment...</span>
+                            }
+                            else
+                            {
+                                <span>Confirm Booking</span>
+                            }
+                        </button>
+
+                        @if (!string.IsNullOrEmpty(statusMessage))
                         {
-                            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
-                            <span>Processing with External Services...</span>
+                            <div class="custom-alert mt-4 @(isSuccess ? "alert-success-custom" : "alert-danger-custom")">
+                                <i class="bi @(isSuccess ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-2"></i>
+                                @statusMessage
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Column: Recent Appointments -->
+            <div class="col-lg-6">
+                <div class="glass-card">
+                    <div class="card-header-glass d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0 fw-bold" style="color: #0f172a;">Upcoming Consultations</h4>
+                        <button class="btn btn-sm btn-light rounded-pill px-3 shadow-sm" @onclick="LoadAppointments">
+                            <i class="bi bi-arrow-clockwise"></i> Sync
+                        </button>
+                    </div>
+                    <div class="card-body-glass">
+                        @if (appointments == null)
+                        {
+                            <div class="text-center p-5 text-muted">
+                                <div class="spinner-border text-primary mb-3" role="status"></div>
+                                <p>Loading your schedule...</p>
+                            </div>
+                        }
+                        else if (!appointments.Any())
+                        {
+                            <div class="text-center p-5 text-muted">
+                                <i class="bi bi-calendar-x fs-1 mb-2 text-secondary"></i>
+                                <p>No upcoming appointments found.</p>
+                            </div>
                         }
                         else
                         {
-                            <span>Confirm Booking</span>
-                        }
-                    </button>
-
-                    @if (!string.IsNullOrEmpty(statusMessage))
-                    {
-                        <div class="alert mt-4 custom-alert @(isSuccess ? "alert-success-custom" : "alert-danger-custom")">
-                            <i class="bi @(isSuccess ? "bi-check-circle-fill" : "bi-exclamation-triangle-fill") me-2"></i>
-                            @statusMessage
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-        
-        <div class="col-lg-7">
-            <div class="premium-card h-100">
-                <div class="card-header-custom d-flex justify-content-between align-items-center">
-                    <div>
-                        <h4 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>Recent Appointments</h4>
-                        <p class="text-muted small mb-0 mt-1">Live from Appointment Database</p>
-                    </div>
-                    <button class="btn btn-outline-secondary btn-sm rounded-pill px-3" @onclick="LoadAppointments">
-                        <i class="bi bi-arrow-clockwise"></i> Refresh
-                    </button>
-                </div>
-                <div class="card-body-custom p-0">
-                    @if (appointments == null)
-                    {
-                        <div class="text-center p-5 text-muted">
-                            <div class="spinner-border text-primary mb-3" role="status"></div>
-                            <p>Loading records...</p>
-                        </div>
-                    }
-                    else if (!appointments.Any())
-                    {
-                        <div class="text-center p-5 text-muted">
-                            <i class="bi bi-inbox fs-1"></i>
-                            <p class="mt-2">No appointments scheduled yet.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="list-group list-group-flush custom-list">
-                            @foreach (var appt in appointments.OrderByDescending(a => a.CreatedAt).Take(8))
-                            {
-                                <div class="list-group-item d-flex justify-content-between align-items-center p-4">
-                                    <div>
-                                        <h6 class="mb-1 fw-bold">@appt.PatientName</h6>
-                                        <p class="mb-0 text-muted small">
-                                            <i class="bi bi-person-badge me-1"></i> Doctor: @(GetDoctorName(appt.DoctorId.ToString()))
-                                        </p>
-                                        <p class="mb-0 text-muted small">
-                                            <i class="bi bi-calendar-event me-1"></i> @appt.SlotStart.ToLocalTime().ToString("MMM dd, yyyy HH:mm")
-                                        </p>
+                            <div class="appt-list">
+                                @foreach (var appt in appointments.OrderByDescending(a => a.CreatedAt).Take(5))
+                                {
+                                    <div class="appt-card">
+                                        <div class="d-flex align-items-center gap-3">
+                                            <img src="/images/doctors/@GetDoctorImage(appt.DoctorId.ToString())" class="doctor-avatar" style="width:50px; height:50px;" alt="Doctor" />
+                                            <div>
+                                                <h6 class="mb-1 fw-bold" style="color: #0f172a;">@appt.PatientName</h6>
+                                                <p class="mb-0 text-muted" style="font-size: 0.85rem;">
+                                                    <i class="bi bi-calendar-event me-1"></i> @appt.SlotStart.ToLocalTime().ToString("MMM dd, yyyy - HH:mm")
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            @{
+                                                var isConfirmed = appt.Status == AppointmentStatus.Confirmed;
+                                                var statusClass = isConfirmed ? "status-confirmed" : "status-pending";
+                                            }
+                                            <span class="status-badge @statusClass">
+                                                @appt.Status
+                                            </span>
+                                        </div>
                                     </div>
-                                    <span class="badge rounded-pill bg-success-custom px-3 py-2">
-                                        @appt.Status
-                                    </span>
-                                </div>
-                            }
-                        </div>
-                    }
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -147,6 +190,11 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadAppointments();
+    }
+
+    private void SelectDoctor(string doctorId)
+    {
+        bookingRequest.DoctorId = doctorId;
     }
 
     private async Task LoadAppointments()
@@ -204,15 +252,15 @@
         }
     }
 
-    private string GetDoctorName(string doctorId)
+    private string GetDoctorImage(string doctorId)
     {
         return doctorId switch
         {
-            "DOC-101" => "Dr. Sarah Jenkins",
-            "DOC-202" => "Dr. Michael Chen",
-            "DOC-303" => "Dr. Emily Stone",
-            "DOC-404" => "Dr. James Wilson",
-            _ => "Unknown Specialist"
+            "DOC-101" => "doc101.png",
+            "DOC-202" => "doc202.png",
+            "DOC-303" => "doc303.png",
+            "DOC-404" => "doc404.png",
+            _ => "doc101.png"
         };
     }
 }
