@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Sdk Name="Aspire.AppHost.Sdk" Version="13.4.6" />
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsAspireHost>true</IsAspireHost>
+    <NoWarn>$(NoWarn);NETSDK1228;ASPIRE002</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Aspire.Hosting.AppHost" />
+    <PackageReference Include="Aspire.Hosting.PostgreSQL" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Appointment.API\Appointment.API.csproj" />
+    <ProjectReference Include="..\Appointment.ScheduleService\Appointment.ScheduleService.csproj" />
+    <ProjectReference Include="..\Appointment.InsuranceGateway\Appointment.InsuranceGateway.csproj" />
+    <ProjectReference Include="..\Appointment.NotificationService\Appointment.NotificationService.csproj" />
+  </ItemGroup>
+
+</Project>
