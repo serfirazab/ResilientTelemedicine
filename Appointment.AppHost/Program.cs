@@ -8,11 +8,15 @@ var scheduleService = builder.AddProject<Projects.Appointment_ScheduleService>("
 var insuranceGateway = builder.AddProject<Projects.Appointment_InsuranceGateway>("insurance-gateway");
 var notificationService = builder.AddProject<Projects.Appointment_NotificationService>("notification-service");
 
-builder.AddProject<Projects.Appointment_API>("appointment-api")
+var api = builder.AddProject<Projects.Appointment_API>("appointment-api")
     .WithReference(appointmentDb)
     .WithReference(scheduleService)
     .WithReference(insuranceGateway)
     .WithReference(notificationService)
     .WaitFor(appointmentDb);
+
+builder.AddProject<Projects.Appointment_Dashboard>("blazor-dashboard")
+    .WithReference(api)
+    .WithExternalHttpEndpoints();
 
 builder.Build().Run();
